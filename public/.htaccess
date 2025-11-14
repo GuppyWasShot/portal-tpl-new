@@ -1,23 +1,27 @@
 # public/.htaccess
-#
-# URL Rewriting untuk Portal TPL
-# Semua request diarahkan ke index.php
-#
-# Contoh:
-# /detail?id=1 → /index.php (diproses oleh router)
-# /galeri → /index.php (diproses oleh router)
+# Portal TPL - URL Rewriting & Security
 
-# Enable mod_rewrite
+# ============================================
+# REWRITE ENGINE
+# ============================================
 <IfModule mod_rewrite.c>
     RewriteEngine On
     
-    # Set base directory (adjust jika project ada di subfolder)
-    # Jika project di root: RewriteBase /
-    # Jika project di subfolder: RewriteBase /portal_tpl/
+    # Set base directory
+    # Sesuaikan dengan lokasi project:
+    # - Jika di root: RewriteBase /
+    # - Jika di subfolder: RewriteBase /portal-tpl-new/
     RewriteBase /
     
-    # Jangan rewrite file/folder yang benar-benar ada
-    # (assets, uploads, dll)
+    # Redirect www to non-www (optional)
+    # RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+    # RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+    
+    # Force HTTPS (uncomment untuk production dengan SSL)
+    # RewriteCond %{HTTPS} !=on
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # Jangan rewrite jika file/folder benar-benar ada
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     
@@ -25,10 +29,49 @@
     RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>
 
-# Security: Prevent directory listing
+# ============================================
+# SECURITY
+# ============================================
+
+# Prevent directory listing
 Options -Indexes
 
-# Security: Prevent access to .php files directly in uploads folder
+# Prevent access to .git, .env, config files
+<FilesMatch "\.(git|gitignore|env|htaccess|htpasswd|ini|log|sh|sql|bak|config)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Prevent access to PHP files in uploads folder
+<DirectoryMatch "^/.*/uploads/">
+    <FilesMatch "\.php$">
+        <IfModule mod_authz_core.c>
+            Require all denied
+        </IfModule>
+        <IfModule !mod_authz_core.c>
+            Order deny,allow
+            Deny from all
+        </IfModule>
+    </FilesMatch>
+</DirectoryMatch>
+
+# Allow only index.php and asset files
+<Files ~ "^(index\.php|.*\.(css|js|jpg|jpeg|png|gif|svg|webp|ico|woff|woff2|ttf|eot))$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Allow from all
+    </IfModule>
+</Files>
+
+# Block access to other PHP files
 <FilesMatch "\.php$">
     <IfModule mod_authz_core.c>
         Require all denied
@@ -39,7 +82,7 @@ Options -Indexes
     </IfModule>
 </FilesMatch>
 
-# Allow access to index.php only
+# But allow index.php
 <Files "index.php">
     <IfModule mod_authz_core.c>
         Require all granted
@@ -49,3 +92,92 @@ Options -Indexes
         Allow from all
     </IfModule>
 </Files>
+
+# ============================================
+# PERFORMANCE
+# ============================================
+
+# Enable compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Browser caching
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Images
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    
+    # CSS and JavaScript
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    
+    # Fonts
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/vnd.ms-fontobject "access plus 1 year"
+    ExpiresByType font/ttf "access plus 1 year"
+    ExpiresByType font/otf "access plus 1 year"
+</IfModule>
+
+# ============================================
+# ERROR PAGES (optional)
+# ============================================
+# ErrorDocument 404 /404.php
+# ErrorDocument 500 /500.php
+
+# ============================================
+# PHP SETTINGS
+# ============================================
+<IfModule mod_php7.c>
+    # File upload limits
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    
+    # Session settings
+    php_value session.gc_maxlifetime 3600
+    
+    # Error reporting (untuk development)
+    # Uncomment untuk production:
+    # php_flag display_errors Off
+    # php_value error_reporting 0
+</IfModule>
+
+# ============================================
+# MIME TYPES
+# ============================================
+<IfModule mod_mime.c>
+    AddType application/javascript js
+    AddType text/css css
+    AddType image/svg+xml svg svgz
+    AddType application/font-woff woff
+    AddType application/font-woff2 woff2
+</IfModule>
+
+# ============================================
+# ADDITIONAL SECURITY HEADERS
+# ============================================
+<IfModule mod_headers.c>
+    # Prevent clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # XSS Protection
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Prevent MIME sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # Referrer Policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Remove X-Powered-By header
+    Header unset X-Powered-By
+</IfModule>
