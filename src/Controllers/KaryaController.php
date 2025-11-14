@@ -88,6 +88,27 @@ class KaryaController {
     }
     
     /**
+     * Tampilkan homepage
+     */
+    public function showHome(): void {
+        // Ambil karya featured/terbaru untuk homepage
+        $filters = [
+            'sort' => 'terbaru'
+        ];
+        
+        $karya_list = $this->karyaModel->getAllKarya($filters);
+        
+        // Limit untuk homepage (6 karya featured)
+        $karya_featured = array_slice($karya_list, 0, 6);
+        
+        // Set page title
+        $page_title = "Beranda";
+        
+        // Load view
+        require __DIR__ . '/../../views/public/index.php';
+    }
+
+    /**
      * Handle submit rating
      * Menggantikan public/proses_rating.php
      */

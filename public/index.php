@@ -2,146 +2,140 @@
 /**
  * public/index.php
  * 
- * Entry point untuk semua request
- * Router sederhana untuk Portal TPL
- * 
- * URL akan diproses menjadi:
- * /detail?id=1 → KaryaController->showDetail(1)
- * /galeri → KaryaController->showGaleri()
- * /submit-rating → KaryaController->submitRating()
+ * Entry Point - Router untuk semua request
  */
 
-// Load autoloader
+// Load autoloader (ini akan load config juga)
 require_once __DIR__ . '/../autoload.php';
 
-// Import controllers yang dibutuhkan
+// Import Controllers
 use PortalTPL\Controllers\KaryaController;
-// use PortalTPL\Controllers\AuthController; // Untuk admin nanti
+use PortalTPL\Controllers\AuthController;
 
-// Error handling untuk development (matikan di production!)
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// Parse URL
+// ============================================
+// PARSE URL
+// ============================================
 $request_uri = $_SERVER['REQUEST_URI'];
-$script_name = dirname($_SERVER['SCRIPT_NAME']);
-$path = str_replace($script_name, '', $request_uri);
+
+// Remove query string
+$path = strtok($request_uri, '?');
+
+// Remove base URL if exists
+if (BASE_URL !== '') {
+    $path = str_replace(BASE_URL, '', $path);
+}
+
+// Clean path
 $path = trim($path, '/');
 
-// Pisahkan path dan query string
-$path_parts = explode('?', $path);
-$route = $path_parts[0];
+// Split path into segments
+$segments = $path === '' ? [] : explode('/', $path);
 
 // ============================================
 // ROUTING LOGIC
 // ============================================
-
 try {
+    // Get route (first segment)
+    $route = $segments[0] ?? '';
+    
     switch ($route) {
-        // ===== PUBLIC ROUTES =====
-        
+        // ===== HOME PAGE =====
         case '':
         case 'home':
-            // Homepage - untuk sementara redirect ke galeri
-            header("Location: /galeri");
-            exit();
-            break;
-            
-        case 'detail':
-            // Detail karya: /detail?id=1
-            $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-            
-            if ($id <= 0) {
-                header("Location: /galeri");
-                exit();
-            }
-            
             $controller = new KaryaController();
-            $controller->showDetail($id);
+            $controller->showHome();
             break;
             
+        // ===== GALERI =====
         case 'galeri':
-            // Galeri dengan filter: /galeri?search=...&kategori[]=...
             $controller = new KaryaController();
             $controller->showGaleri();
             break;
             
+        // ===== DETAIL KARYA =====
+        case 'detail':
+            $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+            if ($id <= 0) {
+                redirect('galeri');
+            }
+            $controller = new KaryaController();
+            $controller->showDetail($id);
+            break;
+            
+        // ===== SUBMIT RATING =====
         case 'submit-rating':
-            // Submit rating (POST only)
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                redirect('galeri');
+            }
             $controller = new KaryaController();
             $controller->submitRating();
             break;
             
+        // ===== TENTANG TPL =====
+        case 'tentang':
+            $page_title = "Tentang TPL";
+            require VIEW_PATH . '/public/tentang.php';
+            break;
+            
         // ===== ADMIN ROUTES =====
-        // TODO: Implement AuthController untuk login, dashboard, dll
-        
         case 'admin':
-            // Redirect ke admin login untuk sementara
-            header("Location: /admin/login");
-            exit();
+            $action = $segments[1] ?? 'login';
+            $authController = new AuthController();
+            
+            switch ($action) {
+                case 'login':
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                        $authController->processLogin();
+                    } else {
+                        $authController->showLogin();
+                    }
+                    break;
+                    
+                case 'logout':
+                    $authController->logout();
+                    break;
+                    
+                case 'dashboard':
+                    $authController->requireLogin();
+                    $page_title = "Dashboard Admin";
+                    require VIEW_PATH . '/admin/dashboard.php';
+                    break;
+                    
+                default:
+                    // Default redirect to login
+                    redirect('admin/login');
+                    break;
+            }
             break;
             
         // ===== 404 NOT FOUND =====
         default:
             http_response_code(404);
-            echo "
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>404 - Halaman Tidak Ditemukan</title>
-                <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        height: 100vh;
-                        margin: 0;
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        color: white;
-                    }
-                    .container {
-                        text-align: center;
-                    }
-                    h1 {
-                        font-size: 120px;
-                        margin: 0;
-                    }
-                    p {
-                        font-size: 24px;
-                    }
-                    a {
-                        color: white;
-                        text-decoration: underline;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class='container'>
-                    <h1>404</h1>
-                    <p>Halaman tidak ditemukan</p>
-                    <p><a href='/galeri'>← Kembali ke Galeri</a></p>
-                </div>
-            </body>
-            </html>
-            ";
+            $page_title = "404 - Halaman Tidak Ditemukan";
+            require VIEW_PATH . '/errors/404.php';
             break;
     }
     
 } catch (Exception $e) {
-    // Error handling global
+    // ===== ERROR HANDLING =====
     http_response_code(500);
     
-    // Di production, jangan tampilkan error detail
-    if (ini_get('display_errors') == '1') {
-        // Development mode
-        echo "<h1>Error</h1>";
-        echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
-        echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+    if (APP_ENV === 'development') {
+        // Development: Show full error
+        echo "<div style='font-family: monospace; padding: 2rem; background: #fee; border: 3px solid #c33; margin: 2rem; border-radius: 8px;'>";
+        echo "<h1 style='color: #c33; margin: 0 0 1rem 0;'>⚠️ Error 500</h1>";
+        echo "<h2 style='color: #666; font-size: 1.2rem; margin-bottom: 1rem;'>" . htmlspecialchars($e->getMessage()) . "</h2>";
+        echo "<div style='background: white; padding: 1rem; border-radius: 4px; overflow-x: auto;'>";
+        echo "<strong>File:</strong> " . htmlspecialchars($e->getFile()) . "<br>";
+        echo "<strong>Line:</strong> " . $e->getLine() . "<br><br>";
+        echo "<strong>Stack Trace:</strong><br>";
+        echo "<pre style='font-size: 0.85rem; line-height: 1.4;'>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+        echo "</div>";
+        echo "<p style='margin-top: 1rem; color: #666;'><a href='" . base_url('galeri') . "' style='color: #c33;'>← Kembali ke Galeri</a></p>";
+        echo "</div>";
     } else {
-        // Production mode
-        echo "<h1>Terjadi Kesalahan</h1>";
-        echo "<p>Silakan coba lagi nanti.</p>";
-        echo "<p><a href='/galeri'>← Kembali ke Galeri</a></p>";
+        // Production: Show generic error
+        $page_title = "500 - Terjadi Kesalahan";
+        require VIEW_PATH . '/errors/500.php';
     }
 }
