@@ -33,7 +33,7 @@ define('VIEW_PATH', ROOT_PATH . '/views');
 // URL Base (adjust sesuai environment)
 // Jika di localhost/portal-tpl-new: BASE_URL = '/portal-tpl-new'
 // Jika di root domain: BASE_URL = ''
-define('BASE_URL', ''); // Kosongkan jika di root, atau '/portal-tpl-new' jika di subfolder
+define('BASE_URL', '/portal-tpl-new/config'); // Kosongkan jika di root, atau '/portal-tpl-new' jika di subfolder
 
 // ============================================
 // UPLOAD CONFIGURATION

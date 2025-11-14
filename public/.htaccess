@@ -11,7 +11,7 @@
     # Sesuaikan dengan lokasi project:
     # - Jika di root: RewriteBase /
     # - Jika di subfolder: RewriteBase /portal-tpl-new/
-    RewriteBase /
+    RewriteBase /portal-tpl-new/
     
     # Redirect www to non-www (optional)
     # RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
