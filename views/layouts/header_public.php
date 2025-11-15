@@ -145,60 +145,62 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
 
     <!-- Header Navigation -->
     <header>
-        <div class="logo">
-            <img src="<?php echo asset('img/logotpl.png'); ?>" alt="Logo TPL">
-            <span>Portal<em>TPL</em></span>
+        <div class="header-container">
+            <div class="logo">
+                <img src="<?php echo asset('img/logotpl.png'); ?>" alt="Logo TPL">
+                <span>Portal<em>TPL</em></span>
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <nav class="desktop-nav">
+                <a href="<?php echo base_url(''); ?>" 
+                   class="<?php echo ($current_page === 'index') ? 'active' : ''; ?>">
+                    Beranda
+                </a>
+                <a href="<?php echo base_url('galeri'); ?>" 
+                   class="<?php echo ($current_page === 'galeri') ? 'active' : ''; ?>">
+                    Galeri Karya
+                </a>
+                <a href="<?php echo base_url('tentang'); ?>" 
+                   class="<?php echo ($current_page === 'tentang') ? 'active' : ''; ?>">
+                    Tentang TPL
+                </a>
+                <a href="<?php echo base_url('admin'); ?>" 
+                   class="btn-login">
+                    Login Admin
+                </a>
+            </nav>
+            
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
         </div>
         
-        <!-- Desktop Navigation -->
-        <nav class="desktop-nav">
-            <a href="<?php echo base_url(''); ?>" 
-               class="<?php echo ($current_page === 'index') ? 'active' : ''; ?>">
-                Beranda
-            </a>
-            <a href="<?php echo base_url('galeri'); ?>" 
-               class="<?php echo ($current_page === 'galeri') ? 'active' : ''; ?>">
-                Galeri Karya
-            </a>
-            <a href="<?php echo base_url('tentang'); ?>" 
-               class="<?php echo ($current_page === 'tentang') ? 'active' : ''; ?>">
-                Tentang TPL
-            </a>
-            <a href="<?php echo base_url('admin'); ?>" 
-               class="btn-login">
-                Login Admin
-            </a>
-        </nav>
-        
-        <!-- Mobile Menu Button -->
-        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-        </button>
+        <!-- Mobile Navigation -->
+        <div class="mobile-menu closed" id="mobileMenu">
+            <nav>
+                <a href="<?php echo base_url(''); ?>" 
+                   class="<?php echo ($current_page === 'index') ? 'active' : ''; ?>">
+                    Beranda
+                </a>
+                <a href="<?php echo base_url('galeri'); ?>" 
+                   class="<?php echo ($current_page === 'galeri') ? 'active' : ''; ?>">
+                    Galeri Karya
+                </a>
+                <a href="<?php echo base_url('tentang'); ?>" 
+                   class="<?php echo ($current_page === 'tentang') ? 'active' : ''; ?>">
+                    Tentang TPL
+                </a>
+                <a href="<?php echo base_url('admin'); ?>" 
+                   class="btn-login">
+                    Login Admin
+                </a>
+            </nav>
+        </div>
     </header>
-    
-    <!-- Mobile Navigation -->
-    <div class="mobile-menu closed" id="mobileMenu">
-        <nav>
-            <a href="<?php echo base_url(''); ?>" 
-               class="<?php echo ($current_page === 'index') ? 'active' : ''; ?>">
-                Beranda
-            </a>
-            <a href="<?php echo base_url('galeri'); ?>" 
-               class="<?php echo ($current_page === 'galeri') ? 'active' : ''; ?>">
-                Galeri Karya
-            </a>
-            <a href="<?php echo base_url('tentang'); ?>" 
-               class="<?php echo ($current_page === 'tentang') ? 'active' : ''; ?>">
-                Tentang TPL
-            </a>
-            <a href="<?php echo base_url('admin'); ?>" 
-               class="btn-login">
-                Login Admin
-            </a>
-        </nav>
-    </div>
     
     <script>
         // Mobile menu toggle
