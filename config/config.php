@@ -3,7 +3,7 @@
  * config/config.php
  * 
  * File konfigurasi global untuk Portal TPL
- * Berisi konstanta dan pengaturan aplikasi
+ * FIXED VERSION - Ready for localhost
  */
 
 // ============================================
@@ -30,11 +30,9 @@ define('PUBLIC_PATH', ROOT_PATH . '/public');
 define('UPLOAD_PATH', PUBLIC_PATH . '/uploads');
 define('VIEW_PATH', ROOT_PATH . '/views');
 
-// URL Base (adjust sesuai environment)
 // Jika di localhost/portal-tpl-new: BASE_URL = '/portal-tpl-new'
 // Jika di root domain: BASE_URL = ''
-define('BASE_URL', '/portal-tpl-new/config'); // Kosongkan jika di root, atau '/portal-tpl-new' jika di subfolder
-
+define('BASE_URL', '/portal-tpl-new'); // 
 // ============================================
 // UPLOAD CONFIGURATION
 // ============================================
@@ -71,7 +69,7 @@ define('LOCKOUT_TIME', 600); // 10 minutes in seconds
 define('ITEMS_PER_PAGE', 12);
 
 // ============================================
-// ERROR REPORTING (sesuaikan dengan environment)
+// ERROR REPORTING
 // ============================================
 if (APP_ENV === 'development') {
     error_reporting(E_ALL);
@@ -101,7 +99,12 @@ date_default_timezone_set('Asia/Jakarta');
 function base_url(string $path = ''): string {
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
     $host = $_SERVER['HTTP_HOST'];
-    return $protocol . $host . BASE_URL . '/' . ltrim($path, '/');
+    
+    // Clean path
+    $path = ltrim($path, '/');
+    $base = rtrim(BASE_URL, '/');
+    
+    return $protocol . $host . $base . '/' . $path;
 }
 
 /**
@@ -115,7 +118,7 @@ function asset(string $path): string {
 
 /**
  * Redirect helper
- * @param string $url URL tujuan
+ * @param string $url URL tujuan (relatif)
  * @param int $statusCode HTTP status code
  */
 function redirect(string $url, int $statusCode = 302): void {
