@@ -41,8 +41,7 @@ class KaryaController {
         
         // Redirect ke galeri jika karya tidak ditemukan
         if ($karya === null) {
-            header("Location: /galeri");
-            exit();
+            redirect('galeri');
         }
         
         // Ambil data tambahan
@@ -115,8 +114,7 @@ class KaryaController {
     public function submitRating(): void {
         // Pastikan request adalah POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: /galeri");
-            exit();
+            redirect('galeri');
         }
         
         session_start();
@@ -139,14 +137,13 @@ class KaryaController {
             );
             
             // Redirect dengan success message
-            header("Location: /detail?id=$id_project&success=rating_submitted");
-            exit();
+            flash('success', 'Rating berhasil dikirim!');
+            redirect('detail?id=' . $id_project);
             
         } catch (\Exception $e) {
             // Redirect dengan error message
-            $errorMsg = urlencode($e->getMessage());
-            header("Location: /detail?id=$id_project&error=$errorMsg");
-            exit();
+            flash('error', $e->getMessage());
+            redirect('detail?id=' . $id_project);
         }
     }
 }

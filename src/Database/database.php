@@ -14,21 +14,15 @@ class Database {
     private static ?Database $instance = null;
     private mysqli $connection;
     
-    // Konfigurasi database
-    private string $host = 'localhost';
-    private string $user = 'root';
-    private string $pass = '';
-    private string $db_name = 'db_portal_tpl';
-    
     /**
      * Private constructor untuk Singleton pattern
      */
     private function __construct() {
         $this->connection = new mysqli(
-            $this->host, 
-            $this->user, 
-            $this->pass, 
-            $this->db_name
+            DB_HOST, 
+            DB_USER, 
+            DB_PASS, 
+            DB_NAME
         );
         
         if ($this->connection->connect_error) {

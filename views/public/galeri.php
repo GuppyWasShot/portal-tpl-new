@@ -145,7 +145,7 @@ $categories = $categoryModel->getAllCategories();
             <!-- Thumbnail -->
             <div class="project-image" style="width: 100%; height: 220px; position: relative; overflow: hidden;">
                 <?php if (!empty($karya['snapshot_url'])): ?>
-                    <img src="<?php echo base_url($karya['snapshot_url']); ?>" 
+                    <img src="<?php echo base_url('public/uploads/' . $karya['snapshot_url']); ?>" 
                          alt="<?php echo htmlspecialchars($karya['judul']); ?>"
                          style="width: 100%; height: 100%; object-fit: cover;">
                 <?php else: ?>

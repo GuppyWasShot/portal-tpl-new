@@ -146,7 +146,7 @@ class Auth {
      * 
      * @param string $redirectUrl URL redirect jika belum login
      */
-    public function requireLogin(string $redirectUrl = '/admin/login'): void {
+    public function requireLogin(string $redirectUrl = 'admin/login'): void {
         if (!$this->isLoggedIn()) {
             flash('error', 'Silakan login terlebih dahulu');
             redirect($redirectUrl);

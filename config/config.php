@@ -53,6 +53,14 @@ define('UPLOAD_ALLOWED_TYPES', [
 define('SESSION_LIFETIME', 3600); // 1 hour
 define('SESSION_NAME', 'portal_tpl_session');
 
+// ⬇️ TAMBAHKAN KODE INI ⬇️
+// Selalu mulai sesi di awal
+if (session_status() === PHP_SESSION_NONE) {
+    session_name(SESSION_NAME);
+    session_set_cookie_params(SESSION_LIFETIME);
+    session_start();
+}
+
 // ============================================
 // SECURITY CONFIGURATION
 // ============================================
@@ -104,6 +112,11 @@ function base_url(string $path = ''): string {
     $path = ltrim($path, '/');
     $base = rtrim(BASE_URL, '/');
     
+    // Build URL
+    if (empty($path)) {
+        return $protocol . $host . $base;
+    }
+    
     return $protocol . $host . $base . '/' . $path;
 }
 
@@ -113,7 +126,7 @@ function base_url(string $path = ''): string {
  * @return string Full URL ke asset
  */
 function asset(string $path): string {
-    return base_url('assets/' . ltrim($path, '/'));
+    return base_url('public/assets/' . ltrim($path, '/'));
 }
 
 /**

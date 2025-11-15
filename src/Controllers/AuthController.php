@@ -65,6 +65,13 @@ class AuthController {
     }
     
     /**
+     * Require login (wrapper untuk authService)
+     */
+    public function requireLogin(): void {
+        $this->authService->requireLogin();
+    }
+    
+    /**
      * Show change password form
      */
     public function showChangePassword(): void {

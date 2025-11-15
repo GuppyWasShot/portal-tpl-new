@@ -33,15 +33,14 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?php echo asset('img/favicon.ico'); ?>">
     
-    <!-- CSS -->
-    <link rel="stylesheet" href="<?php echo asset('css/styles.css'); ?>">
-    
     <!-- Google Fonts (Poppins) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Custom CSS untuk responsive -->
+    <!-- MAIN CSS - INI YANG PENTING! -->
+    <link rel="stylesheet" href="<?php echo asset('css/style.css'); ?>">
+    
     <style>
         /* Smooth scroll */
         html {
@@ -147,7 +146,7 @@ $current_page = basename($_SERVER['PHP_SELF'], '.php');
     <!-- Header Navigation -->
     <header>
         <div class="logo">
-            <img src="<?php echo asset('img/logo_tpl.png'); ?>" alt="Logo TPL" style="width: 35px; height: 35px;">
+            <img src="<?php echo asset('img/logotpl.png'); ?>" alt="Logo TPL">
             <span>Portal<em>TPL</em></span>
         </div>
         

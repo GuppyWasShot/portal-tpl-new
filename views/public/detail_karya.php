@@ -28,7 +28,7 @@ include __DIR__ . '/../layouts/header_public.php';
             <!-- Project Image - Ambil dari $karya['snapshot_url'] -->
             <div class="project-image">
                 <?php if (!empty($karya['snapshot_url'])): ?>
-                    <img src="/uploads/<?php echo htmlspecialchars($karya['snapshot_url']); ?>" 
+                    <img src="<?php echo base_url('public/uploads/' . htmlspecialchars($karya['snapshot_url'])); ?>" 
                          alt="<?php echo htmlspecialchars($karya['judul']); ?>">
                 <?php else: ?>
                     <!-- Placeholder jika tidak ada snapshot -->
@@ -84,7 +84,7 @@ include __DIR__ . '/../layouts/header_public.php';
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;">
                 <?php foreach ($snapshots as $snapshot): ?>
                     <div style="position: relative; height: 150px; border-radius: 10px; overflow: hidden;">
-                        <img src="/uploads/<?php echo htmlspecialchars($snapshot['file_path']); ?>" 
+                        <img src="<?php echo base_url('public/uploads/' . htmlspecialchars($snapshot['file_path'])); ?>" 
                              alt="Snapshot"
                              style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
@@ -97,7 +97,7 @@ include __DIR__ . '/../layouts/header_public.php';
             <h2 class="section-title">File Pendukung</h2>
             <div style="margin-bottom: 30px;">
                 <?php foreach ($documents as $doc): ?>
-                    <a href="/uploads/<?php echo htmlspecialchars($doc['file_path']); ?>" 
+                    <a href="<?php echo base_url('public/uploads/' . htmlspecialchars($doc['file_path'])); ?>" 
                        download
                        style="display: block; padding: 15px; background: #f9f9f9; border-radius: 10px; margin-bottom: 10px; text-decoration: none; color: #2d1b69;">
                         <strong>📄 <?php echo htmlspecialchars($doc['label']); ?></strong><br>
@@ -200,7 +200,7 @@ include __DIR__ . '/../layouts/header_public.php';
                     <?php else: ?>
                         <!-- Form rating -->
                         <h4>Beri Penilaian</h4>
-                        <form method="POST" action="/submit-rating" id="ratingForm">
+                        <form method="POST" action="<?php echo base_url('submit-rating'); ?>" id="ratingForm">
                             <input type="hidden" name="id_project" value="<?php echo $karya['id_project']; ?>">
                             <input type="hidden" name="skor" id="skorInput" required>
                             

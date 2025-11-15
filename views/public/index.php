@@ -109,7 +109,7 @@ include __DIR__ . '/../layouts/header_public.php';
                 <!-- Thumbnail -->
                 <div class="project-image">
                     <?php if (!empty($karya['snapshot_url'])): ?>
-                        <img src="<?php echo base_url($karya['snapshot_url']); ?>" 
+                        <img src="<?php echo base_url('public/uploads/' . $karya['snapshot_url']); ?>" 
                              alt="<?php echo htmlspecialchars($karya['judul']); ?>">
                     <?php else: ?>
                         <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #a8b5f0 0%, #c8b5f0 100%); display: flex; align-items: center; justify-content: center;">
